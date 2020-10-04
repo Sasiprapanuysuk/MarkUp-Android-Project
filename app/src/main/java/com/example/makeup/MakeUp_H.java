@@ -16,7 +16,8 @@ public class MakeUp_H extends AppCompatActivity {
 
         Button เริ่มต้นใช้งาน = (Button)findViewById(R.id.button);
         เริ่มต้นใช้งาน.setOnClickListener(new View.OnClickListener() {
-            @Override     public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 Intent i = new Intent(MakeUp_H.this, MakeUp_M.class);
                 startActivity(i); }
         });

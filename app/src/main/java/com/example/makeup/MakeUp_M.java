@@ -10,6 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -77,8 +81,21 @@ public class MakeUp_M extends AppCompatActivity {
 
         imageView1 = (ImageView) findViewById(R.id.imageView);
 
-        Button แกลอรี่ = (Button) findViewById(R.id.button);
-        แกลอรี่.setOnClickListener(new View.OnClickListener() {
+        TextView ถัดไป = (TextView)findViewById(R.id.nextp);
+        ถัดไป.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(MakeUp_M.this, paramiter.class);
+                myIntent.putExtra("firstKeyName", bitmap);
+                myIntent.putExtra("secondKeyX", x);
+                myIntent.putExtra("secondKeyY", y);
+                startActivity(myIntent);
+            }
+        });
+
+        Button btnSelected = (Button) findViewById(R.id.button);
+        btnSelected.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
                 intent.setType("image/*");
@@ -141,11 +158,10 @@ public class MakeUp_M extends AppCompatActivity {
             getContentResolver().notifyChange(uri, null);
             ContentResolver cr = getContentResolver();
             try {
-//                bitmap = MediaStore.Images.Media.getBitmap(cr, uri);
-                processCameraPicture();
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(cr, uri);
+                imageView1.setImageBitmap(bitmap);
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("Catch", "" + uri.getPath());
             }
         }
     }
@@ -167,8 +183,10 @@ public class MakeUp_M extends AppCompatActivity {
                 .openInputStream(uri), null, bmOptions);
     }
 
+    int x = 0, y = 0;
+    Bitmap bitmap;
     private void processCameraPicture() throws Exception {
-        Bitmap bitmap = decodeBitmapUri(this, uri);
+         bitmap = decodeBitmapUri(this, uri);
         if (detector.isOperational() && bitmap != null) {
             editedBitmap = Bitmap.createBitmap(bitmap.getWidth(), bitmap
                     .getHeight(), bitmap.getConfig());
@@ -196,11 +214,13 @@ public class MakeUp_M extends AppCompatActivity {
 //                canvas.drawText("Face " + (index + 1), face.getPosition().x + face.getWidth(), face.getPosition().y + face.getHeight(), paint);
 
                 for (Landmark landmark : face.getLandmarks()) {
-                    if(landmark.getType() == Landmark.LEFT_CHEEK || landmark.getType() == Landmark.RIGHT_CHEEK){
-                        int x = (int) (landmark.getPosition().x);
-                        int y = (int) (landmark.getPosition().y);
+                    if(landmark.getType() == Landmark.LEFT_CHEEK){
+                         x = (int) (landmark.getPosition().x);
+                         y = (int) (landmark.getPosition().y);
 
                         canvas.drawCircle(x, y, 8, paint);
+                        Log.d("ValueX", "==> " + x);
+                        Log.d("ValueY", "==> " + y);
                     }
                 }
 
@@ -210,6 +230,7 @@ public class MakeUp_M extends AppCompatActivity {
             if (faces.size() == 0) {
                 Toast.makeText(this, "Scan Failed: Found nothing to scan", Toast.LENGTH_SHORT).show();
             } else {
+//                editedBitmap = getCircularBitmap(editedBitmap, x, y);   เอาตรงนี้ไปใส่ในปุ่ม
                 imageView1.setImageBitmap(editedBitmap);
                 Toast.makeText(this, "No of Faces Detected: " + " " + String.valueOf(faces.size()), Toast.LENGTH_SHORT).show();
             }
@@ -217,7 +238,6 @@ public class MakeUp_M extends AppCompatActivity {
             Toast.makeText(this, "Could not set up the detector!", Toast.LENGTH_SHORT).show();
         }
     }
-
 }
 //public class MakeUp_M1 extends AppCompatActivity {
 //    @SuppressLint("MissingSuperCall")
