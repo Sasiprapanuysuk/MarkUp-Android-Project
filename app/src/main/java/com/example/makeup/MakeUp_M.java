@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static android.icu.lang.UCharacter.GraphemeClusterBreak.V;
@@ -158,8 +159,8 @@ public class MakeUp_M extends AppCompatActivity {
             getContentResolver().notifyChange(uri, null);
             ContentResolver cr = getContentResolver();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(cr, uri);
-                imageView1.setImageBitmap(bitmap);
+                bitmap = MediaStore.Images.Media.getBitmap(cr, uri);
+                processCameraPicture();
             } catch (Exception e) {
                 e.printStackTrace();
             }
